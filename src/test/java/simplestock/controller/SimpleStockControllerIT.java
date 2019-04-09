@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.net.URL;
+import java.sql.Timestamp;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +19,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import simplestock.model.Trade;
+import simplestock.model.TradeType;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,15 +39,8 @@ public class SimpleStockControllerIT {
     }
 
     @Test
-    public void getHello() throws Exception {
-        ResponseEntity<String> response = template.getForEntity(baseURL.toString(),
-                String.class);
-        assertThat(response.getBody(), equalTo("Greetings from Spring Boot!"));
-    }
-
-    @Test
     public void postTrade() throws Exception {
-        Trade trade = new Trade();
+        Trade trade = new Trade("TEA", new Timestamp(System.currentTimeMillis()), 12, TradeType.BUY, 5L);
         URL url = new URL(baseURL, "trade");
         RequestEntity<Trade> request = RequestEntity.post(url.toURI())
                 .contentType(MediaType.APPLICATION_JSON).body(trade);
