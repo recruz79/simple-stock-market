@@ -39,8 +39,19 @@ public class SimpleStockControllerIT {
     }
 
     @Test
-    public void postTrade() throws Exception {
+    public void postBuyTrade() throws Exception {
         Trade trade = new Trade("TEA", new Timestamp(System.currentTimeMillis()), 12, TradeType.BUY, 5L);
+        URL url = new URL(baseURL, "trade");
+        RequestEntity<Trade> request = RequestEntity.post(url.toURI())
+                .contentType(MediaType.APPLICATION_JSON).body(trade);
+
+        ResponseEntity<Void> response = template.exchange(request, Void.class);
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    }
+
+    @Test
+    public void postSellTrade() throws Exception {
+        Trade trade = new Trade("BOA", new Timestamp(System.currentTimeMillis()), 102, TradeType.SELL, 15L);
         URL url = new URL(baseURL, "trade");
         RequestEntity<Trade> request = RequestEntity.post(url.toURI())
                 .contentType(MediaType.APPLICATION_JSON).body(trade);
