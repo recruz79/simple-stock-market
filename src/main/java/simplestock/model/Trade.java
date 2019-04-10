@@ -8,13 +8,13 @@ public class Trade {
     Timestamp timestamp;
     Integer quantity;
     TradeType tradeType;
-    Long price;
-    Long settledAmount;
+    Double price;
+    Double settledAmount;
 
     public Trade() {
     }
 
-    public Trade(String stockName, Timestamp timestamp, Integer quantity, TradeType tradeType, Long price) {
+    public Trade(String stockName, Timestamp timestamp, Integer quantity, TradeType tradeType, Double price) {
         this.stockName = stockName;
         this.timestamp = timestamp;
         this.quantity = quantity;
@@ -55,19 +55,19 @@ public class Trade {
         this.tradeType = tradeType;
     }
 
-    public Long getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
-    public Long getSettledAmount() {
+    public Double getSettledAmount() {
         return settledAmount;
     }
 
-    public void setSettledAmount(Long settledAmount) {
+    public void setSettledAmount(Double settledAmount) {
         this.settledAmount = settledAmount;
     }
 }

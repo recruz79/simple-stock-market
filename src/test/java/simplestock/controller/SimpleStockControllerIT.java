@@ -40,7 +40,7 @@ public class SimpleStockControllerIT {
 
     @Test
     public void postBuyTrade() throws Exception {
-        Trade trade = new Trade("TEA", new Timestamp(System.currentTimeMillis()), 12, TradeType.BUY, 5L);
+        Trade trade = new Trade("TEA", new Timestamp(System.currentTimeMillis()), 12, TradeType.BUY, 5D);
         URL url = new URL(baseURL, "trade");
         RequestEntity<Trade> request = RequestEntity.post(url.toURI())
                 .contentType(MediaType.APPLICATION_JSON).body(trade);
@@ -51,7 +51,7 @@ public class SimpleStockControllerIT {
 
     @Test
     public void postSellTrade() throws Exception {
-        Trade trade = new Trade("BOA", new Timestamp(System.currentTimeMillis()), 102, TradeType.SELL, 15L);
+        Trade trade = new Trade("BOA", new Timestamp(System.currentTimeMillis()), 102, TradeType.SELL, 15D);
         URL url = new URL(baseURL, "trade");
         RequestEntity<Trade> request = RequestEntity.post(url.toURI())
                 .contentType(MediaType.APPLICATION_JSON).body(trade);

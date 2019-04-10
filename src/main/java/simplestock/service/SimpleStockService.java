@@ -19,18 +19,18 @@ public class SimpleStockService {
     private Map<String, StockInformation> getStockInformationChart() {
         if (stockInformationChart == null) {
             stockInformationChart = new HashMap<>();
-            stockInformationChart.put("TEA", new StockInformation("TEA", "Common", 0L, 0L, 100L));
-            stockInformationChart.put("POP", new StockInformation("POP", "Common", 8L, 0L, 100L));
-            stockInformationChart.put("ALE", new StockInformation("ALE", "Common", 23L, 0L, 60L));
-            stockInformationChart.put("GIN", new StockInformation("GIN", "Preferred", 8L, 2L, 100L));
-            stockInformationChart.put("JOE", new StockInformation("JOE", "Common", 13L, 0L, 250L));
+            stockInformationChart.put("TEA", new StockInformation("TEA", "Common", 0D, 0D, 100D));
+            stockInformationChart.put("POP", new StockInformation("POP", "Common", 8D, 0D, 100D));
+            stockInformationChart.put("ALE", new StockInformation("ALE", "Common", 23D, 0D, 60D));
+            stockInformationChart.put("GIN", new StockInformation("GIN", "Preferred", 8D, 2D, 100D));
+            stockInformationChart.put("JOE", new StockInformation("JOE", "Common", 13D, 0D, 250D));
         }
         return stockInformationChart;
     }
 
-    public Long getDividendYield(String stockName, Long price) throws Exception {
+    public Double getDividendYield(String stockName, Long price) throws Exception {
         StockInformation stockInformation = stockInformationChart.get(stockName);
-        Long dividendYield = 0L;
+        Double dividendYield = 0D;
         if (stockInformation == null) {
             throw new Exception("No stock found");
         }
@@ -44,26 +44,26 @@ public class SimpleStockService {
         return dividendYield;
     }
 
-    public Long getPERatio(String stockName, Long price) throws Exception {
-        Long dividendYield = getDividendYield(stockName, price);
+    public Double getPERatio(String stockName, Long price) throws Exception {
+        Double dividendYield = getDividendYield(stockName, price);
         if(dividendYield == 0) {
             throw new Exception("Could not calculate PE Ratio since dividendYield is zero");
         }
 
-        Long peRatio = price / dividendYield;
+        Double peRatio = price / dividendYield;
 
         return peRatio;
     }
 
-    public Long getStockPrice(String stockName) throws Exception {
+    public Double getStockPrice(String stockName) throws Exception {
         ArrayList<Trade> tradeList = marketTradeList.get(stockName);
         if (null == tradeList || tradeList.isEmpty()) {
             throw new Exception("Stock list is empty");
         }
 
         Long fiveMinutesAgo = System.currentTimeMillis() - FIVE_MINUTES;
-        Long sumPricePerQuantity = tradeList.stream().filter(o -> o.getTimestamp().getTime() > fiveMinutesAgo)
-                .mapToLong(o -> o.getQuantity() * o.getPrice())
+        Double sumPricePerQuantity = tradeList.stream().filter(o -> o.getTimestamp().getTime() > fiveMinutesAgo)
+                .mapToDouble(o -> o.getQuantity() * o.getPrice())
                 .sum();
 
         Long sumQuantity = tradeList.stream().filter(o -> o.getTimestamp().getTime() > fiveMinutesAgo)
@@ -73,10 +73,17 @@ public class SimpleStockService {
         return sumPricePerQuantity / sumQuantity;
     }
 
-    public Long getGBCEAllShareIndex() {
+    public Double getGBCEAllShareIndex() {Double BGCBEallShareIndex = 1D;
+        Double count = 0D;
+        for(String key : marketTradeList.keySet()) {
+            ArrayList<Trade> stockTradelist = marketTradeList.get(key);
+            for(Trade trade : stockTradelist) {
+                BGCBEallShareIndex *= trade.getPrice();
+                count++;
+            }
+        }
 
-        marketTradeList.forEach((k, v) -> v.stream().map(o -> o.getPrice()).reduce(0L, (a, b) -> a * b));
-        return 0L;
+        return Math.pow(BGCBEallShareIndex.doubleValue(), (1/count));
     }
 
     public void addTradeList(Trade trade) {

@@ -4,14 +4,14 @@ public class StockInformation {
 
     String stockName;
     String type;
-    Long lastDividend;
-    Long fixedDividen;
-    Long parValue;
+    Double lastDividend;
+    Double fixedDividen;
+    Double parValue;
 
     public StockInformation() {
     }
 
-    public StockInformation(String stockName, String type, Long lastDividend, Long fixedDividen, Long parValue) {
+    public StockInformation(String stockName, String type, Double lastDividend, Double fixedDividen, Double parValue) {
         this.stockName = stockName;
         this.type = type;
         this.lastDividend = lastDividend;
@@ -35,27 +35,27 @@ public class StockInformation {
         this.type = type;
     }
 
-    public Long getLastDividend() {
+    public Double getLastDividend() {
         return lastDividend;
     }
 
-    public void setLastDividend(Long lastDividend) {
+    public void setLastDividend(Double lastDividend) {
         this.lastDividend = lastDividend;
     }
 
-    public Long getFixedDividen() {
+    public Double getFixedDividen() {
         return fixedDividen;
     }
 
-    public void setFixedDividen(Long fixedDividen) {
+    public void setFixedDividen(Double fixedDividen) {
         this.fixedDividen = fixedDividen;
     }
 
-    public Long getParValue() {
+    public Double getParValue() {
         return parValue;
     }
 
-    public void setParValue(Long parValue) {
+    public void setParValue(Double parValue) {
         this.parValue = parValue;
     }
 }
