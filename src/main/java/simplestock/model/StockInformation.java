@@ -5,17 +5,17 @@ public class StockInformation {
     String stockName;
     String type;
     Double lastDividend;
-    Double fixedDividen;
+    Double fixedDividend;
     Double parValue;
 
     public StockInformation() {
     }
 
-    public StockInformation(String stockName, String type, Double lastDividend, Double fixedDividen, Double parValue) {
+    public StockInformation(String stockName, String type, Double lastDividend, Double fixedDividend, Double parValue) {
         this.stockName = stockName;
         this.type = type;
         this.lastDividend = lastDividend;
-        this.fixedDividen = fixedDividen;
+        this.fixedDividend = fixedDividend;
         this.parValue = parValue;
     }
 
@@ -44,11 +44,11 @@ public class StockInformation {
     }
 
     public Double getFixedDividen() {
-        return fixedDividen;
+        return fixedDividend;
     }
 
     public void setFixedDividen(Double fixedDividen) {
-        this.fixedDividen = fixedDividen;
+        this.fixedDividend = fixedDividen;
     }
 
     public Double getParValue() {

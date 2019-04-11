@@ -28,7 +28,7 @@ public class SimpleStockService {
         return stockInformationChart;
     }
 
-    public Double getDividendYield(String stockName, Long price) throws Exception {
+    public Double getDividendYield(String stockName, Double price) throws Exception {
         StockInformation stockInformation = stockInformationChart.get(stockName);
         Double dividendYield = 0D;
         if (stockInformation == null) {
@@ -44,9 +44,9 @@ public class SimpleStockService {
         return dividendYield;
     }
 
-    public Double getPERatio(String stockName, Long price) throws Exception {
+    public Double getPERatio(String stockName, Double price) throws Exception {
         Double dividendYield = getDividendYield(stockName, price);
-        if(dividendYield == 0) {
+        if (dividendYield == 0) {
             throw new Exception("Could not calculate PE Ratio since dividendYield is zero");
         }
 
@@ -73,22 +73,23 @@ public class SimpleStockService {
         return sumPricePerQuantity / sumQuantity;
     }
 
-    public Double getGBCEAllShareIndex() {Double BGCBEallShareIndex = 1D;
+    public Double getMarketAllShareIndex() {
+        Double marketAllShareIndex = 1D;
         Double count = 0D;
-        for(String key : marketTradeList.keySet()) {
+        for (String key : marketTradeList.keySet()) {
             ArrayList<Trade> stockTradelist = marketTradeList.get(key);
-            for(Trade trade : stockTradelist) {
-                BGCBEallShareIndex *= trade.getPrice();
+            for (Trade trade : stockTradelist) {
+                marketAllShareIndex *= trade.getPrice();
                 count++;
             }
         }
 
-        return Math.pow(BGCBEallShareIndex.doubleValue(), (1/count));
+        return Math.pow(marketAllShareIndex.doubleValue(), (1 / count));
     }
 
     public void addTradeList(Trade trade) {
         ArrayList tradeList = marketTradeList.get(trade.getStockName());
-        if(tradeList == null) {
+        if (tradeList == null) {
             tradeList = new ArrayList();
         }
 
