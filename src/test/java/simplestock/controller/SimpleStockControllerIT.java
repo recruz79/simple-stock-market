@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 
 import java.net.URL;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,11 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.util.UriComponentsBuilder;
 import simplestock.model.Trade;
 import simplestock.model.TradeType;
 
@@ -60,4 +60,40 @@ public class SimpleStockControllerIT {
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
     }
 
+    @Test
+    public void getStockPrice() throws Exception {
+        URL url = new URL(baseURL, "stockPrice");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url.toString())
+                .queryParam("stockName", "POP");
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        HttpEntity<String> response = template.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
+        assertThat(response.getBody(), equalTo("5.0"));
+    }
+
+    @Test
+    public void getPeRatio() throws Exception {
+        URL url = new URL(baseURL, "peRatio");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url.toString())
+                .queryParam("stockName", "POP")
+                .queryParam("price", 12.5D);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        HttpEntity<String> response = template.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
+        assertThat(response.getBody(), equalTo("19.53125"));
+    }
+
+    @Test
+    public void getMarketAllShareIndex() throws Exception {
+                URL url = new URL(baseURL, "marketAllShareIndex");
+        RequestEntity<Void> request = RequestEntity.get(url.toURI()).build();
+        ResponseEntity<String> response = template.exchange(request, String.class);
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(response.getBody(), equalTo("3.2213893191084813"));
+    }
 }

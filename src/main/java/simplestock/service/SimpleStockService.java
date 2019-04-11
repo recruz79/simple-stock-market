@@ -1,35 +1,22 @@
 package simplestock.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import simplestock.model.StockInformation;
 import simplestock.model.Trade;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class SimpleStockService {
 
     public static final long FIVE_MINUTES = 5 * 60 * 1000;
 
-    Map<String, ArrayList<Trade>> marketTradeList = new HashMap<>();
-    Map<String, StockInformation> stockInformationChart;
-
-    private Map<String, StockInformation> getStockInformationChart() {
-        if (stockInformationChart == null) {
-            stockInformationChart = new HashMap<>();
-            stockInformationChart.put("TEA", new StockInformation("TEA", "Common", 0D, 0D, 100D));
-            stockInformationChart.put("POP", new StockInformation("POP", "Common", 8D, 0D, 100D));
-            stockInformationChart.put("ALE", new StockInformation("ALE", "Common", 23D, 0D, 60D));
-            stockInformationChart.put("GIN", new StockInformation("GIN", "Preferred", 8D, 2D, 100D));
-            stockInformationChart.put("JOE", new StockInformation("JOE", "Common", 13D, 0D, 250D));
-        }
-        return stockInformationChart;
-    }
+    @Autowired
+    SimpleStockRepository simpleStockRepository;
 
     public Double getDividendYield(String stockName, Double price) throws Exception {
-        StockInformation stockInformation = stockInformationChart.get(stockName);
+        StockInformation stockInformation = simpleStockRepository.getStockInformationChart().get(stockName);
         Double dividendYield = 0D;
         if (stockInformation == null) {
             throw new Exception("No stock found");
@@ -56,7 +43,7 @@ public class SimpleStockService {
     }
 
     public Double getStockPrice(String stockName) throws Exception {
-        ArrayList<Trade> tradeList = marketTradeList.get(stockName);
+        ArrayList<Trade> tradeList = simpleStockRepository.getMarketTradeList().get(stockName);
         if (null == tradeList || tradeList.isEmpty()) {
             throw new Exception("Stock list is empty");
         }
@@ -66,8 +53,8 @@ public class SimpleStockService {
                 .mapToDouble(o -> o.getQuantity() * o.getPrice())
                 .sum();
 
-        Long sumQuantity = tradeList.stream().filter(o -> o.getTimestamp().getTime() > fiveMinutesAgo)
-                .mapToLong(o -> o.getQuantity())
+        Double sumQuantity = tradeList.stream().filter(o -> o.getTimestamp().getTime() > fiveMinutesAgo)
+                .mapToDouble(o -> o.getQuantity())
                 .sum();
 
         return sumPricePerQuantity / sumQuantity;
@@ -76,19 +63,19 @@ public class SimpleStockService {
     public Double getMarketAllShareIndex() {
         Double marketAllShareIndex = 1D;
         Double count = 0D;
-        for (String key : marketTradeList.keySet()) {
-            ArrayList<Trade> stockTradelist = marketTradeList.get(key);
+        for (String key : simpleStockRepository.getMarketTradeList().keySet()) {
+            ArrayList<Trade> stockTradelist = simpleStockRepository.getMarketTradeList().get(key);
             for (Trade trade : stockTradelist) {
                 marketAllShareIndex *= trade.getPrice();
                 count++;
             }
         }
 
-        return Math.pow(marketAllShareIndex.doubleValue(), (1 / count));
+        return Math.pow(marketAllShareIndex, (1 / count));
     }
 
     public void addTradeList(Trade trade) {
-        ArrayList tradeList = marketTradeList.get(trade.getStockName());
+        ArrayList tradeList = simpleStockRepository.getMarketTradeList().get(trade.getStockName());
         if (tradeList == null) {
             tradeList = new ArrayList();
         }
