@@ -70,12 +70,13 @@ public class SimpleStockControllerIT {
                 .queryParam("stockName", "POP");
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
-        HttpEntity<String> response = template.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
-        assertThat(response.getBody(), equalTo("5.0"));
+        ResponseEntity<String> response = template.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(response.getBody(), equalTo("5.00"));
     }
 
     @Test
-    public void getPeRatio() throws Exception {
+    public void getPOPPeRatio() throws Exception {
         URL url = new URL(baseURL, "peRatio");
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
@@ -84,8 +85,24 @@ public class SimpleStockControllerIT {
                 .queryParam("price", 12.5D);
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
-        HttpEntity<String> response = template.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
-        assertThat(response.getBody(), equalTo("19.53125"));
+        ResponseEntity<String> response = template.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(response.getBody(), equalTo("19.5313"));
+    }
+
+    @Test
+    public void getTEAPeRatioGivesError() throws Exception {
+        URL url = new URL(baseURL, "peRatio");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url.toString())
+                .queryParam("stockName", "TEA")
+                .queryParam("price", 102.7D);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = template.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
+        assertThat(response.getBody(), equalTo("Could not calculate PE Ratio since dividendYield is zero"));
     }
 
     @Test
@@ -94,6 +111,7 @@ public class SimpleStockControllerIT {
         RequestEntity<Void> request = RequestEntity.get(url.toURI()).build();
         ResponseEntity<String> response = template.exchange(request, String.class);
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
-        assertThat(response.getBody(), equalTo("3.2213893191084813"));
+        assertThat(response.getBody(), equalTo("3.2214"));
     }
+
 }

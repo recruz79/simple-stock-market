@@ -2,50 +2,54 @@ package simplestock.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import simplestock.exception.MarketException;
 import simplestock.model.StockInformation;
 import simplestock.model.Trade;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 @Service
 public class SimpleStockService {
 
     public static final long FIVE_MINUTES = 5 * 60 * 1000;
+    public static final String COMMON_TYPE = "Common";
+    public static final String PREFERRED_TYPE = "Preferred";
 
     @Autowired
     SimpleStockRepository simpleStockRepository;
 
-    public Double getDividendYield(String stockName, Double price) throws Exception {
+    public BigDecimal getDividendYield(String stockName, Double price) throws MarketException {
         StockInformation stockInformation = simpleStockRepository.getStockInformationChart().get(stockName);
         Double dividendYield = 0D;
         if (stockInformation == null) {
-            throw new Exception("No stock found");
+            throw new MarketException("No stock found");
         }
 
-        if ("Common".equals(stockInformation.getType())) {
+        if (COMMON_TYPE.equals(stockInformation.getType())) {
             dividendYield = stockInformation.getLastDividend() / price;
-        } else if ("Preferred".equals(stockInformation.getType())) {
+        } else if (PREFERRED_TYPE.equals(stockInformation.getType())) {
             dividendYield = stockInformation.getFixedDividen() / price;
         }
 
-        return dividendYield;
+        return new BigDecimal(dividendYield);
     }
 
-    public Double getPERatio(String stockName, Double price) throws Exception {
-        Double dividendYield = getDividendYield(stockName, price);
-        if (dividendYield == 0) {
-            throw new Exception("Could not calculate PE Ratio since dividendYield is zero");
+    public BigDecimal getPERatio(String stockName, Double price) throws MarketException {
+        BigDecimal dividendYield = getDividendYield(stockName, price);
+        if (dividendYield.compareTo(BigDecimal.ZERO) == 0) {
+            throw new MarketException("Could not calculate PE Ratio since dividendYield is zero");
         }
 
-        Double peRatio = price / dividendYield;
+        BigDecimal peRatio = new BigDecimal(price / dividendYield.doubleValue());
 
         return peRatio;
     }
 
-    public Double getStockPrice(String stockName) throws Exception {
+    public BigDecimal getStockPrice(String stockName) throws MarketException {
         ArrayList<Trade> tradeList = simpleStockRepository.getMarketTradeList().get(stockName);
         if (null == tradeList || tradeList.isEmpty()) {
-            throw new Exception("Stock list is empty");
+            throw new MarketException("Stock list is empty");
         }
 
         Long fiveMinutesAgo = System.currentTimeMillis() - FIVE_MINUTES;
@@ -57,10 +61,10 @@ public class SimpleStockService {
                 .mapToDouble(o -> o.getQuantity())
                 .sum();
 
-        return sumPricePerQuantity / sumQuantity;
+        return new BigDecimal(sumPricePerQuantity / sumQuantity);
     }
 
-    public Double getMarketAllShareIndex() {
+    public BigDecimal getMarketAllShareIndex() {
         Double marketAllShareIndex = 1D;
         Double count = 0D;
         for (String key : simpleStockRepository.getMarketTradeList().keySet()) {
@@ -71,7 +75,7 @@ public class SimpleStockService {
             }
         }
 
-        return Math.pow(marketAllShareIndex, (1 / count));
+        return new BigDecimal(Math.pow(marketAllShareIndex, (1 / count)));
     }
 
     public void addTradeList(Trade trade) {
