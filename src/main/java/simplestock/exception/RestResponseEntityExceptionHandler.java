@@ -14,8 +14,7 @@ import java.util.Optional;
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {Exception.class})
-    protected ResponseEntity<Object> handleConflict(
-            RuntimeException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
         String message = "Exception error";
         return handleExceptionInternal(ex, message,
                 new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
