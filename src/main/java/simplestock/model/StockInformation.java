@@ -1,17 +1,19 @@
 package simplestock.model;
 
+import java.math.BigDecimal;
+
 public class StockInformation {
 
     String stockName;
     String type;
-    Double lastDividend;
-    Double fixedDividend;
-    Double parValue;
+    BigDecimal lastDividend;
+    BigDecimal fixedDividend;
+    BigDecimal parValue;
 
     public StockInformation() {
     }
 
-    public StockInformation(String stockName, String type, Double lastDividend, Double fixedDividend, Double parValue) {
+    public StockInformation(String stockName, String type, BigDecimal lastDividend, BigDecimal fixedDividend, BigDecimal parValue) {
         this.stockName = stockName;
         this.type = type;
         this.lastDividend = lastDividend;
@@ -35,27 +37,27 @@ public class StockInformation {
         this.type = type;
     }
 
-    public Double getLastDividend() {
+    public BigDecimal getLastDividend() {
         return lastDividend;
     }
 
-    public void setLastDividend(Double lastDividend) {
+    public void setLastDividend(BigDecimal lastDividend) {
         this.lastDividend = lastDividend;
     }
 
-    public Double getFixedDividen() {
+    public BigDecimal getFixedDividen() {
         return fixedDividend;
     }
 
-    public void setFixedDividen(Double fixedDividen) {
+    public void setFixedDividen(BigDecimal fixedDividen) {
         this.fixedDividend = fixedDividen;
     }
 
-    public Double getParValue() {
+    public BigDecimal getParValue() {
         return parValue;
     }
 
-    public void setParValue(Double parValue) {
+    public void setParValue(BigDecimal parValue) {
         this.parValue = parValue;
     }
 }

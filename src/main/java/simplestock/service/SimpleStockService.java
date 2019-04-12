@@ -19,31 +19,29 @@ public class SimpleStockService {
     @Autowired
     SimpleStockRepository simpleStockRepository;
 
-    public BigDecimal getDividendYield(String stockName, Double price) throws MarketException {
+    public BigDecimal getDividendYield(String stockName, BigDecimal price) throws MarketException {
         StockInformation stockInformation = simpleStockRepository.getStockInformationChart().get(stockName);
-        Double dividendYield = 0D;
+        BigDecimal dividendYield = BigDecimal.ZERO;
         if (stockInformation == null) {
             throw new MarketException("No stock found");
         }
 
         if (COMMON_TYPE.equals(stockInformation.getType())) {
-            dividendYield = stockInformation.getLastDividend() / price;
+            dividendYield = stockInformation.getLastDividend().divide(price);
         } else if (PREFERRED_TYPE.equals(stockInformation.getType())) {
-            dividendYield = stockInformation.getFixedDividen() / price;
+            dividendYield = stockInformation.getFixedDividen().divide(price);
         }
 
-        return new BigDecimal(dividendYield);
+        return dividendYield;
     }
 
-    public BigDecimal getPERatio(String stockName, Double price) throws MarketException {
+    public BigDecimal getPERatio(String stockName, BigDecimal price) throws MarketException {
         BigDecimal dividendYield = getDividendYield(stockName, price);
         if (dividendYield.compareTo(BigDecimal.ZERO) == 0) {
             throw new MarketException("Could not calculate PE Ratio since dividendYield is zero");
         }
 
-        BigDecimal peRatio = new BigDecimal(price / dividendYield.doubleValue());
-
-        return peRatio;
+        return price.divide(dividendYield);
     }
 
     public BigDecimal getStockPrice(String stockName) throws MarketException {
@@ -53,29 +51,30 @@ public class SimpleStockService {
         }
 
         Long fiveMinutesAgo = System.currentTimeMillis() - FIVE_MINUTES;
-        Double sumPricePerQuantity = tradeList.stream().filter(o -> o.getTimestamp().getTime() > fiveMinutesAgo)
-                .mapToDouble(o -> o.getQuantity() * o.getPrice())
+        BigDecimal sumPricePerQuantity = tradeList.stream().filter(o -> o.getTimestamp().getTime() > fiveMinutesAgo)
+                .map(o -> o.getPrice().multiply(new BigDecimal(o.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        Integer sumQuantity = tradeList.stream().filter(o -> o.getTimestamp().getTime() > fiveMinutesAgo)
+                .mapToInt(o -> o.getQuantity())
                 .sum();
 
-        Double sumQuantity = tradeList.stream().filter(o -> o.getTimestamp().getTime() > fiveMinutesAgo)
-                .mapToDouble(o -> o.getQuantity())
-                .sum();
-
-        return new BigDecimal(sumPricePerQuantity / sumQuantity);
+        return sumPricePerQuantity.divide(new BigDecimal(sumQuantity));
     }
 
     public BigDecimal getMarketAllShareIndex() {
-        Double marketAllShareIndex = 1D;
+        BigDecimal marketAllShareIndex = BigDecimal.ONE;
         Double count = 0D;
         for (String key : simpleStockRepository.getMarketTradeList().keySet()) {
-            ArrayList<Trade> stockTradelist = simpleStockRepository.getMarketTradeList().get(key);
-            for (Trade trade : stockTradelist) {
-                marketAllShareIndex *= trade.getPrice();
+            ArrayList<Trade> stockTradeList = simpleStockRepository.getMarketTradeList().get(key);
+            for (Trade trade : stockTradeList) {
+                marketAllShareIndex = marketAllShareIndex.multiply(trade.getPrice());
                 count++;
             }
         }
 
-        return new BigDecimal(Math.pow(marketAllShareIndex, (1 / count)));
+        //return marketAllShareIndex.pow(BigDecimalMath(1 / count)), new MathContext((4)));
+        return new BigDecimal(Math.pow(marketAllShareIndex.doubleValue(), (1 / count)));
     }
 
     public void addTradeList(Trade trade) {

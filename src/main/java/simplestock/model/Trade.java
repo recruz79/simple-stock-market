@@ -1,5 +1,6 @@
 package simplestock.model;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Trade {
@@ -8,19 +9,19 @@ public class Trade {
     Timestamp timestamp;
     Integer quantity;
     TradeType tradeType;
-    Double price;
-    Double settledAmount;
+    BigDecimal price;
+    BigDecimal settledAmount;
 
     public Trade() {
     }
 
-    public Trade(String stockName, Timestamp timestamp, Integer quantity, TradeType tradeType, Double price) {
+    public Trade(String stockName, Timestamp timestamp, Integer quantity, TradeType tradeType, BigDecimal price) {
         this.stockName = stockName;
         this.timestamp = timestamp;
         this.quantity = quantity;
         this.tradeType = tradeType;
         this.price = price;
-        this.settledAmount = price * quantity;
+        this.settledAmount = price.multiply(new BigDecimal(quantity));
     }
 
     public String getStockName() {
@@ -55,19 +56,19 @@ public class Trade {
         this.tradeType = tradeType;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public Double getSettledAmount() {
+    public BigDecimal getSettledAmount() {
         return settledAmount;
     }
 
-    public void setSettledAmount(Double settledAmount) {
+    public void setSettledAmount(BigDecimal settledAmount) {
         this.settledAmount = settledAmount;
     }
 }

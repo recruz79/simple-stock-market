@@ -3,6 +3,7 @@ package simplestock.controller;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class SimpleStockControllerIT {
 
     @Test
     public void postBuyTrade() throws Exception {
-        Trade trade = new Trade("TEA", new Timestamp(System.currentTimeMillis()), 12, TradeType.BUY, 5D);
+        Trade trade = new Trade("TEA", new Timestamp(System.currentTimeMillis()), 12, TradeType.BUY, new BigDecimal(5));
         URL url = new URL(baseURL, "trade");
         RequestEntity<Trade> request = RequestEntity.post(url.toURI())
                 .contentType(MediaType.APPLICATION_JSON).body(trade);
@@ -51,7 +52,7 @@ public class SimpleStockControllerIT {
 
     @Test
     public void postSellTrade() throws Exception {
-        Trade trade = new Trade("BOA", new Timestamp(System.currentTimeMillis()), 102, TradeType.SELL, 15D);
+        Trade trade = new Trade("BOA", new Timestamp(System.currentTimeMillis()), 102, TradeType.SELL, new BigDecimal(15));
         URL url = new URL(baseURL, "trade");
         RequestEntity<Trade> request = RequestEntity.post(url.toURI())
                 .contentType(MediaType.APPLICATION_JSON).body(trade);
@@ -82,7 +83,7 @@ public class SimpleStockControllerIT {
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url.toString())
                 .queryParam("stockName", "POP")
-                .queryParam("price", 12.5D);
+                .queryParam("price", 12.5);
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
         ResponseEntity<String> response = template.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
@@ -97,7 +98,7 @@ public class SimpleStockControllerIT {
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url.toString())
                 .queryParam("stockName", "TEA")
-                .queryParam("price", 102.7D);
+                .queryParam("price", 102.7);
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
         ResponseEntity<String> response = template.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
@@ -107,7 +108,7 @@ public class SimpleStockControllerIT {
 
     @Test
     public void getMarketAllShareIndex() throws Exception {
-                URL url = new URL(baseURL, "marketAllShareIndex");
+        URL url = new URL(baseURL, "marketAllShareIndex");
         RequestEntity<Void> request = RequestEntity.get(url.toURI()).build();
         ResponseEntity<String> response = template.exchange(request, String.class);
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));

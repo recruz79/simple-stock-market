@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import simplestock.model.Trade;
 import simplestock.service.SimpleStockService;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @RestController
@@ -29,7 +30,7 @@ public class SimpleStockController {
 
     @GetMapping(path = "/peRatio")
     @ResponseStatus(HttpStatus.OK)
-    public String getPeRatio(@RequestParam String stockName, @RequestParam Double price) throws Exception {
+    public String getPeRatio(@RequestParam String stockName, @RequestParam BigDecimal price) throws Exception {
         return simpleStockService.getPERatio(stockName, price).setScale(4, RoundingMode.HALF_UP).toString();
     }
 
