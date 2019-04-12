@@ -29,7 +29,7 @@ public class SimpleStockService {
         if (COMMON_TYPE.equals(stockInformation.getType())) {
             dividendYield = stockInformation.getLastDividend().divide(price);
         } else if (PREFERRED_TYPE.equals(stockInformation.getType())) {
-            dividendYield = stockInformation.getFixedDividen().divide(price);
+            dividendYield = stockInformation.getFixedDividend().divide(price);
         }
 
         return dividendYield;
@@ -73,7 +73,6 @@ public class SimpleStockService {
             }
         }
 
-        //return marketAllShareIndex.pow(BigDecimalMath(1 / count)), new MathContext((4)));
         return new BigDecimal(Math.pow(marketAllShareIndex.doubleValue(), (1 / count)));
     }
 

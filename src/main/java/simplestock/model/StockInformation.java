@@ -45,12 +45,12 @@ public class StockInformation {
         this.lastDividend = lastDividend;
     }
 
-    public BigDecimal getFixedDividen() {
+    public BigDecimal getFixedDividend() {
         return fixedDividend;
     }
 
-    public void setFixedDividen(BigDecimal fixedDividen) {
-        this.fixedDividend = fixedDividen;
+    public void setFixedDividend(BigDecimal fixedDividend) {
+        this.fixedDividend = fixedDividend;
     }
 
     public BigDecimal getParValue() {
