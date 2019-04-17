@@ -7,7 +7,9 @@ import simplestock.model.StockInformation;
 import simplestock.model.Trade;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class SimpleStockService {
@@ -45,7 +47,7 @@ public class SimpleStockService {
     }
 
     public BigDecimal getStockPrice(String stockName) throws MarketException {
-        ArrayList<Trade> tradeList = simpleStockRepository.getMarketTradeList().get(stockName);
+        List<Trade> tradeList = simpleStockRepository.getMarketTradeList().get(stockName);
         if (null == tradeList || tradeList.isEmpty()) {
             throw new MarketException("Stock list is empty");
         }
@@ -66,7 +68,7 @@ public class SimpleStockService {
         BigDecimal marketAllShareIndex = BigDecimal.ONE;
         Double count = 0D;
         for (String key : simpleStockRepository.getMarketTradeList().keySet()) {
-            ArrayList<Trade> stockTradeList = simpleStockRepository.getMarketTradeList().get(key);
+            List<Trade> stockTradeList = simpleStockRepository.getMarketTradeList().get(key);
             for (Trade trade : stockTradeList) {
                 marketAllShareIndex = marketAllShareIndex.multiply(trade.getPrice());
                 count++;
@@ -77,11 +79,14 @@ public class SimpleStockService {
     }
 
     public void addTradeList(Trade trade) {
-        ArrayList tradeList = simpleStockRepository.getMarketTradeList().get(trade.getStockName());
+        List<Trade> tradeList = simpleStockRepository.getMarketTradeList().get(trade.getStockName());
         if (tradeList == null) {
-            tradeList = new ArrayList();
+            tradeList = Collections.synchronizedList(new LinkedList());
+            List<Trade> currentTradeList = simpleStockRepository.getMarketTradeList().putIfAbsent(trade.getStockName(), tradeList);
+            if(currentTradeList != null) {
+                tradeList  = currentTradeList;
+            }
         }
-
         tradeList.add(trade);
     }
 

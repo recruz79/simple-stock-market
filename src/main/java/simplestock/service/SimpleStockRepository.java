@@ -7,25 +7,27 @@ import simplestock.model.TradeType;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class SimpleStockRepository {
 
     private Map<String, StockInformation> stockInformationChart;
-    private Map<String, ArrayList<Trade>> marketTradeList;
+    private Map<String, List<Trade>> marketTradeList;
 
-    public  Map<String, ArrayList<Trade>> getMarketTradeList() {
-        if(marketTradeList == null) {
-            marketTradeList = new HashMap<>();
-            ArrayList<Trade> list1 = new ArrayList();
+    public Map<String, List<Trade>> getMarketTradeList() {
+        if (marketTradeList == null) {
+            marketTradeList = new ConcurrentHashMap<>();
+            List<Trade> list1 = Collections.synchronizedList(new LinkedList());
             list1.add(new Trade("TEA", new Timestamp(System.currentTimeMillis()), 102, TradeType.SELL, new BigDecimal(1)));
             list1.add(new Trade("TEA", new Timestamp(System.currentTimeMillis()), 102, TradeType.SELL, new BigDecimal(2)));
             list1.add(new Trade("TEA", new Timestamp(System.currentTimeMillis()), 102, TradeType.SELL, new BigDecimal(3)));
 
-            ArrayList<Trade> list2 = new ArrayList();
+            List<Trade> list2 = Collections.synchronizedList(new LinkedList());
             list2.add(new Trade("POP", new Timestamp(System.currentTimeMillis()), 102, TradeType.SELL, new BigDecimal(4)));
             list2.add(new Trade("POP", new Timestamp(System.currentTimeMillis()), 102, TradeType.SELL, new BigDecimal(5)));
             list2.add(new Trade("POP", new Timestamp(System.currentTimeMillis()), 102, TradeType.SELL, new BigDecimal(6)));
@@ -39,7 +41,7 @@ public class SimpleStockRepository {
 
     public Map<String, StockInformation> getStockInformationChart() {
         if (stockInformationChart == null) {
-            stockInformationChart = new HashMap<>();
+            stockInformationChart = new ConcurrentHashMap<>();
             stockInformationChart.put("TEA", new StockInformation("TEA", "Common", new BigDecimal(0), new BigDecimal(0), new BigDecimal(100)));
             stockInformationChart.put("POP", new StockInformation("POP", "Common", new BigDecimal(8), new BigDecimal(0), new BigDecimal(100)));
             stockInformationChart.put("ALE", new StockInformation("ALE", "Common", new BigDecimal(23), new BigDecimal(0), new BigDecimal(100)));
