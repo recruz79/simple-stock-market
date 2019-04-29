@@ -68,14 +68,14 @@ public class SimpleStockService {
 
     public BigDecimal getMarketAllShareIndex() {
         AtomicInteger counter = new AtomicInteger(0);
-        Integer result = simpleStockRepository.getMarketTradeList().keySet()
+        BigDecimal result = simpleStockRepository.getMarketTradeList().keySet()
                 .stream()
-                .mapToInt(o -> simpleStockRepository.getMarketTradeList().get(o).stream()
-                .mapToInt(x -> {
+                .map(o -> simpleStockRepository.getMarketTradeList().get(o).stream()
+                .map(x -> {
                     counter.addAndGet(1);
-                    return x.getPrice().intValue();
-                }).reduce(1, (a, b) -> a * b)).reduce(1, (a, b) -> a * b);
-        return new BigDecimal(Math.pow(result, (1 / counter.doubleValue())));
+                    return x.getPrice();
+                }).reduce(BigDecimal.ONE, BigDecimal::multiply)).reduce(BigDecimal.ONE, BigDecimal::multiply);
+        return new BigDecimal(Math.pow(result.doubleValue(), (1 / counter.doubleValue())));
     }
 
     public void addTradeTransaction(Trade trade, TradeType tradeType) {
