@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class SimpleStockService {
@@ -65,17 +66,15 @@ public class SimpleStockService {
     }
 
     public BigDecimal getMarketAllShareIndex() {
-        BigDecimal marketAllShareIndex = BigDecimal.ONE;
-        Double count = 0D;
-        for (String key : simpleStockRepository.getMarketTradeList().keySet()) {
-            List<Trade> stockTradeList = simpleStockRepository.getMarketTradeList().get(key);
-            for (Trade trade : stockTradeList) {
-                marketAllShareIndex = marketAllShareIndex.multiply(trade.getPrice());
-                count++;
-            }
-        }
-
-        return new BigDecimal(Math.pow(marketAllShareIndex.doubleValue(), (1 / count)));
+        AtomicInteger counter = new AtomicInteger(0);
+        Integer result = simpleStockRepository.getMarketTradeList().keySet()
+                .stream()
+                .mapToInt(o -> simpleStockRepository.getMarketTradeList().get(o).stream()
+                .mapToInt(x -> {
+                    counter.addAndGet(1);
+                    return x.getPrice().intValue();
+                }).reduce(1, (a, b) -> a * b)).reduce(1, (a, b) -> a * b);
+        return new BigDecimal(Math.pow(result, (1 / counter.doubleValue())));
     }
 
     public void addTradeList(Trade trade) {
