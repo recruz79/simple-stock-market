@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import simplestock.model.Trade;
+import simplestock.model.TradeType;
 import simplestock.service.SimpleStockService;
 
 import java.math.BigDecimal;
@@ -15,10 +16,17 @@ public class SimpleStockController {
     @Autowired
     SimpleStockService simpleStockService;
 
-    @PostMapping(path = "/trade")
+    @PostMapping(path = "/trade/buy")
     @ResponseStatus(HttpStatus.OK)
-    public String processSingleTrade(@RequestBody Trade trade) {
-        simpleStockService.addTradeList(trade);
+    public String processBuyTrade(@RequestBody Trade trade) {
+        simpleStockService.addTradeTransaction(trade, TradeType.BUY);
+        return "Result successed!";
+    }
+
+    @PostMapping(path = "/trade/sell")
+    @ResponseStatus(HttpStatus.OK)
+    public String processSellTrade(@RequestBody Trade trade) {
+        simpleStockService.addTradeTransaction(trade, TradeType.SELL);
         return "Result successed!";
     }
 

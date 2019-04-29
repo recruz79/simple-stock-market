@@ -1,12 +1,12 @@
 package simplestock.model;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.Instant;
 
 public class Trade {
 
     String stockName;
-    Timestamp timestamp;
+    Instant timestamp;
     Integer quantity;
     TradeType tradeType;
     BigDecimal price;
@@ -15,11 +15,10 @@ public class Trade {
     public Trade() {
     }
 
-    public Trade(String stockName, Timestamp timestamp, Integer quantity, TradeType tradeType, BigDecimal price) {
+    public Trade(String stockName, Instant timestamp, Integer quantity, BigDecimal price) {
         this.stockName = stockName;
         this.timestamp = timestamp;
         this.quantity = quantity;
-        this.tradeType = tradeType;
         this.price = price;
         this.settledAmount = price.multiply(new BigDecimal(quantity));
     }
@@ -32,11 +31,11 @@ public class Trade {
         this.stockName = stockName;
     }
 
-    public Timestamp getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
+    public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
 

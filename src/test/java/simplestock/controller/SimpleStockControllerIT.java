@@ -1,14 +1,6 @@
 package simplestock.controller;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import java.math.BigDecimal;
-import java.net.URL;
-import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,11 +12,17 @@ import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.util.UriComponentsBuilder;
 import simplestock.model.Trade;
-import simplestock.model.TradeType;
+
+import java.math.BigDecimal;
+import java.net.URL;
+import java.time.Instant;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SimpleStockControllerIT {
+public class SimpleStockControllerIT extends BaseTest {
 
     @LocalServerPort
     private int port;
@@ -37,12 +35,20 @@ public class SimpleStockControllerIT {
     @Before
     public void setUp() throws Exception {
         this.baseURL = new URL("http://localhost:" + port + "/");
+        generateTradeInformation();
+        generateStockInformation();
+    }
+
+    @After
+    public void cleanUp() throws Exception {
+        cleanUpTradeInformation();
+        cleanUpStockInformation();
     }
 
     @Test
     public void postBuyTrade() throws Exception {
-        Trade trade = new Trade("TEA", new Timestamp(System.currentTimeMillis()), 12, TradeType.BUY, new BigDecimal(5));
-        URL url = new URL(baseURL, "trade");
+        Trade trade = new Trade("TEA", Instant.now(), 12, new BigDecimal(991));
+        URL url = new URL(baseURL, "trade/buy");
         RequestEntity<Trade> request = RequestEntity.post(url.toURI())
                 .contentType(MediaType.APPLICATION_JSON).body(trade);
 
@@ -52,8 +58,8 @@ public class SimpleStockControllerIT {
 
     @Test
     public void postSellTrade() throws Exception {
-        Trade trade = new Trade("BOA", new Timestamp(System.currentTimeMillis()), 102, TradeType.SELL, new BigDecimal(15));
-        URL url = new URL(baseURL, "trade");
+        Trade trade = new Trade("BOA", Instant.now(), 102, new BigDecimal(636));
+        URL url = new URL(baseURL, "trade/sell");
         RequestEntity<Trade> request = RequestEntity.post(url.toURI())
                 .contentType(MediaType.APPLICATION_JSON).body(trade);
 
@@ -112,7 +118,7 @@ public class SimpleStockControllerIT {
         RequestEntity<Void> request = RequestEntity.get(url.toURI()).build();
         ResponseEntity<String> response = template.exchange(request, String.class);
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
-        assertThat(response.getBody(), equalTo("3.2214"));
+        assertThat(response.getBody(), equalTo("2.9938"));
     }
 
 }

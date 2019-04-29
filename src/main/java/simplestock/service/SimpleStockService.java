@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import simplestock.exception.MarketException;
 import simplestock.model.StockInformation;
 import simplestock.model.Trade;
+import simplestock.model.TradeType;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -54,11 +55,11 @@ public class SimpleStockService {
         }
 
         Long fiveMinutesAgo = System.currentTimeMillis() - FIVE_MINUTES;
-        BigDecimal sumPricePerQuantity = tradeList.stream().filter(o -> o.getTimestamp().getTime() > fiveMinutesAgo)
+        BigDecimal sumPricePerQuantity = tradeList.stream().filter(o -> o.getTimestamp().toEpochMilli() > fiveMinutesAgo)
                 .map(o -> o.getPrice().multiply(new BigDecimal(o.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        Integer sumQuantity = tradeList.stream().filter(o -> o.getTimestamp().getTime() > fiveMinutesAgo)
+        Integer sumQuantity = tradeList.stream().filter(o -> o.getTimestamp().toEpochMilli() > fiveMinutesAgo)
                 .mapToInt(o -> o.getQuantity())
                 .sum();
 
@@ -77,7 +78,8 @@ public class SimpleStockService {
         return new BigDecimal(Math.pow(result, (1 / counter.doubleValue())));
     }
 
-    public void addTradeList(Trade trade) {
+    public void addTradeTransaction(Trade trade, TradeType tradeType) {
+        trade.setTradeType(tradeType);
         List<Trade> tradeList = simpleStockRepository.getMarketTradeList().get(trade.getStockName());
         if (tradeList == null) {
             tradeList = Collections.synchronizedList(new LinkedList());
