@@ -9,7 +9,6 @@ import simplestock.service.SimpleStockService;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class BaseTest {
 
