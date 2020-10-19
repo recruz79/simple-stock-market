@@ -47,4 +47,11 @@ public class SimpleStockController {
     public String getMarketAllShareIndex() throws Exception {
         return simpleStockService.getMarketAllShareIndex().setScale(4, RoundingMode.HALF_UP).toString();
     }
+
+    @GetMapping(path = "/test")
+    @ResponseStatus(HttpStatus.OK)
+    public String getTestAccess() throws Exception {
+        return "Test is ok";
+    }
+
 }
